@@ -1,6 +1,103 @@
 CuraX is an AI-powered healthcare platform designed to provide smart, personalized wellness solutions.
- It integrates features like mental health support, diet planning, fitness tracking, and doctor appointments into one seamless experience.
+It integrates features like mental health support, diet planning, fitness tracking, and doctor appointments into one seamless experience.
 
+## 🌟 Core Features
+
+### 1. 🧮 BMI Calculator
+
+* Calculates Body Mass Index based on height and weight
+* Categorizes users into Underweight, Normal, Overweight, or Obese
+* Helps users understand their health status instantly
+
+---
+
+### 2. 🚶 Step Tracker
+
+* Tracks daily steps taken by the user
+* Encourages an active lifestyle with step goals
+* Displays progress in a simple and visual format
+
+---
+
+### 3. 💧 Water Intake Tracker
+
+* Monitors daily water consumption
+* Sends reminders to maintain proper hydration
+* Helps prevent dehydration and improve overall health
+
+---
+
+### 4. 🔥 Calorie Tracker
+
+* Tracks calories consumed throughout the day
+* Helps users manage diet and maintain fitness goals
+* Useful for weight loss, gain, or maintenance plans
+
+---
+
+### 5. 🎯 Daily Health Goals
+
+* Allows users to set personalized daily targets:
+
+  * Steps
+  * Water intake
+  * Calories
+* Tracks goal completion status in real-time
+
+---
+
+### 6. 📊 Weekly Progress Dashboard
+
+* Displays weekly health performance
+* Visual representation of:
+
+  * Steps taken
+  * Calories consumed
+  * Water intake
+* Helps users analyze consistency and improvement
+
+---
+
+### 7. 📈 Data Visualization
+
+* Graphs and charts for better understanding
+* Easy comparison of daily vs weekly progress
+* Enhances decision-making through insights
+
+---
+
+### 8. 🔔 Smart Reminders (Optional Feature)
+
+* Notifications for:
+
+  * Drinking water
+  * Completing step goals
+  * Maintaining daily routine
+
+---
+
+### 9. 👤 User-Friendly Interface
+
+* Clean and responsive UI
+* Easy navigation for all age groups
+* Mobile and desktop compatible
+
+---
+
+### 10. 🔐 Data Management
+
+* Secure storage of user health data
+* Easy access and updates
+* Ensures privacy and reliability
+
+---
+
+## 💡 Future Enhancements
+
+* AI-based health recommendations
+* Integration with wearable devices
+* Mental health tracking
+* Personalized diet plans
 
 
 <img width="967" height="588" alt="image" src="https://github.com/user-attachments/assets/3e213b6e-a5e3-4876-8143-f5a5c36582c1" />
