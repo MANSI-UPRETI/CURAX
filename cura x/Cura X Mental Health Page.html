@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CuraX Mental Health</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <!-- Chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #eef5ff, #f8fbff);
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 250px;
+      height: 100vh;
+      position: fixed;
+      background: linear-gradient(180deg, #2563eb, #3b82f6);
+      color: white;
+      padding: 25px;
+    }
+
+    .sidebar h3 {
+      margin-bottom: 20px;
+    }
+
+    .sidebar a {
+      display: block;
+      color: white;
+      margin: 12px 0;
+      padding: 10px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .sidebar a:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateX(5px);
+    }
+
+    /* MAIN */
+    .main {
+      margin-left: 250px;
+      padding: 30px;
+      max-width: 1200px;
+    }
+
+    h2 {
+      font-weight: 600;
+      color: #1e3a8a;
+    }
+
+    /* CARDS */
+    .card-box {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      transition: 0.3s;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-box:hover {
+      transform: translateY(-5px);
+    }
+
+    /* CHAT */
+    .chat-box {
+      height: 220px;
+      overflow-y: auto;
+      padding: 10px;
+      border-radius: 10px;
+      background: #f9fbff;
+    }
+
+    .msg-user {
+      text-align: right;
+      margin: 6px;
+    }
+
+    .msg-ai {
+      text-align: left;
+      margin: 6px;
+    }
+
+    .bubble {
+      display: inline-block;
+      padding: 10px 14px;
+      border-radius: 15px;
+    }
+
+    .user {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .ai {
+      background: #e5e7eb;
+    }
+
+    /* CHART */
+    #moodChart {
+      height: 200px !important;
+    }
+
+    /* BREATHING SMALL */
+    .breath-circle {
+  width: 20px;   /* smaller */
+  height: 20px;  /* smaller */
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #60a5fa);
+      margin: auto;
+      animation: breathe 4s infinite;
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+    }
+
+    @keyframes breathe {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.4); }
+      100% { transform: scale(1); }
+    }
+
+    /* THERAPIST */
+    .therapist {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-radius: 10px;
+      background: #f1f5ff;
+      margin-bottom: 10px;
+    }
+
+    textarea {
+      resize: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+
+<div class="sidebar">
+  <h3><i class="fa fa-heartbeat"></i> CuraX</h3>
+  <a href="Cura X Dashboard Page.html"><i class="fa fa-home"></i> Dashboard</a>
+  <a href="Cura X Appointment Page.html"><i class="fa fa-heart"></i> Appointments</a>
+  <a href="Cura X Mental Health Page.html"><i class="fa fa-brain"></i> Mental</a>
+  <a href="Cura X Diet Plan Page.html"><i class="fa fa-apple-alt"></i> Diet</a>
+  <a href="Cura X Fitness Plan Page.html"><i class="fa fa-dumbbell"></i> Fitness</a>
+    <a href="CuraX Gamification Page.html"><i class="fa fa-gamepad"></i> Gamification</a>
+</div>
+
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <h2 class="mb-4">Mental Health Dashboard</h2>
+
+    <!-- TOP ROW -->
+    <div class="row g-4">
+
+      <!-- CHAT -->
+      <div class="col-md-7">
+        <div class="card-box">
+          <h5>AI Chat Support</h5>
+
+          <div id="chat" class="chat-box"></div>
+
+          <div class="d-flex mt-2">
+            <input id="input" class="form-control me-2" placeholder="Type message...">
+            <button class="btn btn-primary" onclick="sendMsg()">
+              <i class="fa fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MOOD -->
+      <div class="col-md-5">
+        <div class="card-box">
+          <h5>Mood Tracker</h5>
+
+          <select id="mood" class="form-control mb-2">
+            <option>😊 Happy</option>
+            <option>😐 Neutral</option>
+            <option>😞 Sad</option>
+            <option>😰 Stressed</option>
+          </select>
+
+          <button class="btn btn-success mb-2" onclick="saveMood()">Save Mood</button>
+
+          <canvas id="moodChart"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- MIDDLE ROW -->
+    <div class="row g-4 mt-1">
+
+      <div class="col-md-4">
+        <div class="card-box text-center">
+          <h5>Stress Level</h5>
+
+          <div class="progress mb-2">
+            <div id="stressBar" class="progress-bar bg-danger" style="width:40%">40%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card-box text-center">
+          <h5>Breathing Exercise</h5>
+
+          <div class="breath-circle"></div>
+          <p class="mt-2">Inhale... Exhale...</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card-box text-center">
+          <h5>Daily Affirmation</h5>
+
+          <p id="affirm">You are stronger than you think 💙</p>
+          <button class="btn btn-outline-primary btn-sm" onclick="newAffirm()">New</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BOTTOM ROW -->
+    <div class="row g-4 mt-1">
+
+      <div class="col-md-7">
+        <div class="card-box">
+          <h5>Journal</h5>
+
+          <textarea id="journal" class="form-control" rows="5" placeholder="Write your thoughts..."></textarea>
+          <button class="btn btn-primary mt-2" onclick="saveJournal()">Save</button>
+        </div>
+      </div>
+
+      <div class="col-md-5">
+        <div class="card-box">
+          <h5>Therapists</h5>
+
+          <div class="therapist">
+            <span>Dr. Sharma ⭐4.8</span>
+            <button class="btn btn-sm btn-outline-primary">Book</button>
+          </div>
+
+          <div class="therapist">
+            <span>Dr. Mehta ⭐4.6</span>
+            <button class="btn btn-sm btn-outline-primary">Book</button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    function sendMsg() {
+      let text = document.getElementById('input').value;
+      if (!text) return;
+
+      let chat = document.getElementById('chat');
+
+      chat.innerHTML += `<div class='msg-user'><span class='bubble user'>${text}</span></div>`;
+      chat.innerHTML += `<div class='msg-ai'><span class='bubble ai'>Take a deep breath. You're doing well 💙</span></div>`;
+
+      document.getElementById('input').value = '';
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    let moods = [];
+
+    function saveMood() {
+      let m = document.getElementById('mood').value;
+      moods.push(m);
+
+      chart.data.labels = moods.map((_, i) => "Day " + (i + 1));
+      chart.data.datasets[0].data = moods.map(() => Math.floor(Math.random() * 10));
+      chart.update();
+    }
+
+    const ctx = document.getElementById('moodChart');
+
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Mood Trend',
+          data: [],
+          borderWidth: 2
+        }]
+      }
+    });
+
+    const affirmations = [
+      "You are doing amazing 💙",
+      "You are enough 🌸",
+      "This too shall pass 🌿",
+      "Stay strong and keep going 🔥"
+    ];
+
+    function newAffirm() {
+      document.getElementById("affirm").innerText =
+        affirmations[Math.floor(Math.random() * affirmations.length)];
+    }
+
+    function saveJournal() {
+      let text = document.getElementById("journal").value;
+      localStorage.setItem("journal", text);
+      alert("Saved successfully!");
+    }
+
+    window.onload = function () {
+      document.getElementById("journal").value =
+        localStorage.getItem("journal") || "";
+    }
+
+  </script>
+
+</body>
+
+</html>

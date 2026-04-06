@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CuraX Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #e3f2fd, #f8fbff);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .main-container {
+      display: flex;
+      width: 90%;
+      max-width: 900px;
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+      animation: fadeInUp 1s;
+    }
+
+    .left {
+      flex: 1;
+      background: #eaf4ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      width: 300px;
+    }
+
+    .left {
+  flex: 1;
+  background: #eaf4ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* 🔥 important */
+}
+
+.left img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 🔥 KEY LINE */
+  animation: float 4s infinite ease-in-out;
+}
+
+
+    .right {
+      flex: 1;
+      padding: 30px;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 600;
+      color: #0d6efd;
+      margin-bottom: 10px;
+    }
+
+    .login-title {
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .form-control {
+      border-radius: 10px;
+      transition: 0.3s;
+    }
+
+    .form-control:focus {
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 3px rgba(13,110,253,0.15);
+    }
+
+    .btn-primary {
+      border-radius: 10px;
+      transition: 0.3s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(13,110,253,0.3);
+    }
+
+    .toggle-password {
+      cursor: pointer;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0); }
+    }
+
+    @media(max-width:768px) {
+      .main-container {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="main-container">
+
+  <!-- LEFT ILLUSTRATION -->
+  <div class="left">
+ <img src="img/login.jpg" alt="login">
+
+  </div>
+
+  <!-- RIGHT LOGIN -->
+  <div class="right animate__animated animate__fadeInRight">
+
+    <div class="logo">
+      <i class="fa fa-heartbeat"></i> CuraX
+    </div>
+
+    <h4 class="login-title">Welcome Back 👋</h4>
+
+    <form id="loginForm">
+
+      <div class="mb-3">
+        <label>Email</label>
+        <input type="email" class="form-control" id="email" required>
+      </div>
+
+      <div class="mb-3 position-relative">
+        <label>Password</label>
+        <input type="password" class="form-control" id="password" required>
+        <i class="fa fa-eye position-absolute top-50 end-0 translate-middle-y me-3 toggle-password" onclick="togglePassword()"></i>
+      </div>
+
+      <div class="d-flex justify-content-between mb-3">
+        <div>
+          <input type="checkbox"> Remember me
+        </div>
+        <a href="#">Forgot?</a>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
+
+      <button type="button" class="btn btn-light w-100 mb-3">
+        <i class="fab fa-google"></i> Continue with Google
+      </button>
+
+      <p class="text-center">Don't have an account? <a href="#">Sign Up</a></p>
+
+    </form>
+
+  </div>
+
+</div>
+
+<script>
+function togglePassword() {
+  const password = document.getElementById('password');
+  password.type = password.type === 'password' ? 'text' : 'password';
+}
+
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+
+  if(email && password) {
+    const btn = document.querySelector("button[type='submit']");
+    btn.innerHTML = "<span class='spinner-border spinner-border-sm'></span> Logging in...";
+
+    setTimeout(() => {
+      window.location.href = 'Cura X Dashboard Page.html';
+    }, 1200);
+  } else {
+    alert('Please fill all fields');
+  }
+});
+</script>
+
+</body>
+</html>

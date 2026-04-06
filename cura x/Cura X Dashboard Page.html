@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CuraX Dashboard</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: linear-gradient(135deg, #eef5ff 0%, #e0f2fe 100%);
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 260px;
+  height: 100vh;
+  position: fixed;
+  background: linear-gradient(180deg, #1e40af 0%, #3b82f6 50%, #2563eb 100%);
+  color: white;
+  padding: 30px 20px;
+  z-index: 1000;
+  box-shadow: 4px 0 20px rgba(37,99,235,0.3);
+}
+
+.sidebar h3 { 
+  margin-bottom: 35px; 
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  color: white;
+  text-decoration: none;
+  margin: 12px 0;
+  padding: 14px 18px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.sidebar a:hover, .sidebar a.active {
+  background: rgba(255,255,255,0.25);
+  transform: translateX(5px);
+}
+
+.main {
+  margin-left: 260px;
+  padding: 35px;
+}
+
+.card-box {
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  padding: 35px;
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  transition: all 0.4s ease;
+  height: 100%;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.card-box:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+}
+
+.stat {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1f2937;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.bmi-category {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-top: 8px;
+}
+
+.bmi-underweight { background: #dbeafe; color: #1e40af; }
+.bmi-normal { background: #dcfce7; color: #166534; }
+.bmi-overweight { background: #fef3c7; color: #92400e; }
+.bmi-obese { background: #fecaca; color: #991b1b; }
+
+.progress {
+  height: 14px;
+  border-radius: 12px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  background: #f8fafc;
+}
+
+input, textarea, select {
+  border-radius: 14px !important;
+  border: 2px solid #e2e8f0;
+  padding: 14px 18px;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+  transform: translateY(-1px);
+}
+
+button {
+  border-radius: 14px !important;
+  padding: 14px 28px;
+  font-weight: 600;
+  border: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+#chartCanvas {
+  max-height: 320px;
+  height: 320px;
+  border-radius: 12px;
+}
+
+.tip-item {
+  background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(99,102,241,0.1));
+  border-left: 5px solid #3b82f6;
+  padding: 18px 20px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.tip-item:hover {
+  transform: translateX(8px);
+  box-shadow: 0 10px 25px rgba(59,130,246,0.2);
+}
+
+.med-item {
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+  border-left: 4px solid #22c55e;
+  padding: 15px 20px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  transition: all 0.3s;
+}
+
+.record-item {
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  border-left: 4px solid #3b82f6;
+  padding: 15px 20px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 992px) {
+  .sidebar { width: 100%; height: auto; position: relative; }
+  .main { margin-left: 0; padding: 25px 20px; }
+}
+</style>
+</head>
+
+<body>
+<div class="sidebar">
+  <h3><i class="fa fa-heartbeat me-2"></i>CuraX</h3>
+  <a href="#" class="active"><i class="fa fa-home me-2"></i> Dashboard</a>
+  <a href="Cura X Appointment Page.html"><i class="fa fa-calendar-check me-2"></i> Appointments</a>
+  <a href="Cura X Mental Health Page.html"><i class="fa fa-brain me-2"></i> Mental Health</a>
+  <a href="Cura X Diet Plan Page.html"><i class="fa fa-apple-alt me-2"></i> Diet Plans</a>
+  <a href="Cura X Fitness Plan Page.html"><i class="fa fa-dumbbell me-2"></i> Fitness</a>
+  <a href="CuraX Gamification Page.html"><i class="fa fa-gamepad me-2"></i> Gamification</a>
+</div>
+
+<div class="main">
+  <div class="d-flex justify-content-between align-items-center mb-5">
+    <h2 class="mb-0">Welcome Back 👋</h2>
+    <div class="text-end">
+      <small class="text-muted">Today: <span id="currentDate"></span></small>
+    </div>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="row g-4 mb-5">
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+      <div class="card-box text-center">
+        <i class="fa fa-weight text-primary fs-1 mb-3 d-block"></i>
+        <p class="mb-4 fs-5 fw-semibold text-muted">BMI</p>
+        <div id="bmi" class="stat">--</div>
+        <div id="bmiCategory" class="bmi-category mt-2"></div>
+        <div id="bmiTip" class="mt-3 small text-muted"></div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+      <div class="card-box text-center">
+        <i class="fa fa-shoe-prints text-success fs-1 mb-3 d-block"></i>
+        <p class="mb-4 fs-5 fw-semibold text-muted">Steps Today</p>
+        <div id="steps" class="stat">0</div>
+        <div class="progress mt-3">
+          <div id="stepsProgress" class="progress-bar bg-success" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+      <div class="card-box text-center">
+        <i class="fa fa-tint text-info fs-1 mb-3 d-block"></i>
+        <p class="mb-4 fs-5 fw-semibold text-muted">Water Intake</p>
+        <div id="water" class="stat">0 L</div>
+        <div class="progress mt-3">
+          <div id="waterProgress" class="progress-bar bg-info" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+      <div class="card-box text-center">
+        <i class="fa fa-fire text-danger fs-1 mb-3 d-block"></i>
+        <p class="mb-4 fs-5 fw-semibold text-muted">Calories Burned</p>
+        <div id="calories" class="stat">0 kcal</div>
+        <div class="progress mt-3">
+          <div id="caloriesProgress" class="progress-bar bg-danger" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BMI Calculator & Daily Progress -->
+  <div class="row g-4 mb-5">
+    <div class="col-xl-6">
+      <div class="card-box">
+        <h5 class="mb-4"><i class="fa fa-calculator text-primary me-3"></i>BMI Calculator</h5>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">Height</label>
+            <input type="number" id="height" class="form-control" placeholder="170" step="0.1">
+            <small class="text-muted">in cm</small>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-semibold">Weight</label>
+            <input type="number" id="weight" class="form-control" placeholder="70" step="0.1">
+            <small class="text-muted">in kg</small>
+          </div>
+        </div>
+        <button class="btn btn-primary w-100 mb-4" onclick="calculateBMI()">
+          <i class="fa fa-calculate me-2"></i>Calculate BMI
+        </button>
+        <div id="bmiResult" class="text-center p-4 border rounded-3 bg-light" style="display:none;">
+          <h4 id="bmiValue" class="mb-2"></h4>
+          <div id="bmiStatus" class="bmi-category fs-6 mb-3"></div>
+          <div id="bmiAdvice" class="text-muted"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-6">
+      <div class="card-box">
+        <h5 class="mb-4"><i class="fa fa-chart-line text-info me-3"></i>Weekly Progress</h5>
+        <div class="progress mb-4">
+          <div class="progress-bar bg-gradient bg-info" id="overallProgress" style="width:0%">
+            <span class="fw-semibold">85%</span>
+          </div>
+        </div>
+        <canvas id="chartCanvas"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Goals & Tips -->
+  <div class="row g-4 mb-5">
+    <div class="col-xl-6">
+      <div class="card-box">
+        <h5 class="mb-4"><i class="fa fa-bullseye text-success me-3"></i>Daily Health Goal</h5>
+        <input type="text" id="goalInput" class="form-control mb-3" placeholder="e.g. Walk 10,000 steps">
+        <button class="btn btn-success w-100 mb-4" onclick="saveGoal()">
+          <i class="fa fa-save me-2"></i>Save Goal
+        </button>
+        <div class="mb-3">
+          <label class="fw-semibold mb-2 d-block">Current Goal:</label>
+          <div id="goalDisplay" class="p-3 bg-light rounded border">
+            <span id="goalText" class="text-muted">No goal set</span>
+          </div>
+        </div>
+        <div class="progress">
+          <div id="goalProgress" class="progress-bar bg-success" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-6">
+      <div class="card-box">
+        <h5 class="mb-4"><i class="fa fa-lightbulb text-warning me-3"></i>Smart Health Tips</h5>
+        <div id="tipsContainer">
+          <!-- Tips populated by JS -->
+        </div>
+        <button class="btn btn-outline-warning w-100 mt-3" onclick="generateNewTip()">
+          <i class="fa fa-sync-alt me-2"></i>New Tip
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Other Features -->
+  <div class="row g-4">
+    <div class="col-xl-3 col-lg-6">
+      <div class="card-box">
+        <h5 class="mb-4"><i class="fa fa-pills text-success me-3"></i>Meds Reminder</h5>
+        <div class="input-group mb-3">
+          <input type="text" id="medicineInput" class="form-control" placeholder="Medicine name">
+          <button class="btn btn-success" onclick="addMedicine()">
+            <i class="fa fa-plus"></i>
+          </button>
+        </div>
+        <div id="medicationsList"></div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-lg-6">
+      <div class="card-box">
+        <h5 class="mb-4"><i class="fa fa-robot text-danger me-3"></i>AI Prediction</h5>
+        <input type="text" id="symptomsInput" class="form-control mb-3" placeholder="Symptoms...">
+        <button class="btn btn-danger w-100" onclick="predictDisease()">
+          <i class="fa fa-brain me-2"></i>Predict
+        </button>
+        <div id="predictionResult" class="mt-3"></div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-lg-6">
+      <div class="card-box">
+        <h5 class="mb-4"><i class="fa fa-upload text-primary me-3"></i>Reports</h5>
+        <input type="file" id="reportFile" class="form-control mb-3" accept=".pdf,.jpg,.png">
+        <button class="btn btn-primary w-100" onclick="uploadReport()">
+          <i class="fa fa-cloud-upload-alt me-2"></i>Upload
+        </button>
+        <div id="reportPreview" class="mt-3 text-center"></div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-lg-6">
+      <div class="card-box">
+        <h5 class="mb-4"><i class="fa fa-file-medical text-info me-3"></i>Records</h5>
+        <textarea id="healthRecord" class="form-control mb-3" rows="2" placeholder="Health note..."></textarea>
+        <button class="btn btn-info w-100" onclick="saveHealthRecord()">
+          <i class="fa fa-save me-2"></i>Save
+        </button>
+        <div id="healthRecordsList" class="mt-3" style="max-height: 200px; overflow-y: auto;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Global state
+let userData = JSON.parse(localStorage.getItem('curaXData')) || {
+  steps: 0, water: 0, calories: 0, goals: [], records: [], medications: [], reports: []
+};
+let chartInstance = null;
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+  
+  updateStats();
+  loadData();
+  initChart();
+  generateTips();
+  setInterval(updateLiveStats, 4000);
+});
+
+// BMI Calculator with tips
+function calculateBMI() {
+  const height = parseFloat(document.getElementById('height').value);
+  const weight = parseFloat(document.getElementById('weight').value);
+  
+  if (!height || !weight || height <= 0 || weight <= 0) {
+    alert('Please enter valid height and weight');
+    return;
+  }
+  
+  const bmi = (weight / Math.pow(height / 100, 2)).toFixed(1);
+  const bmiValueEl = document.getElementById('bmiValue');
+  const bmiStatusEl = document.getElementById('bmiStatus');
+  const bmiAdviceEl = document.getElementById('bmiAdvice');
+  const resultEl = document.getElementById('bmiResult');
+  
+  bmiValueEl.textContent = bmi;
+  
+  let category, advice, colorClass;
+  if (bmi < 18.5) {
+    category = 'Underweight';
+    advice = 'Increase calorie intake with healthy fats, proteins, and complex carbs. Consider consulting a nutritionist.';
+    colorClass = 'bmi-underweight';
+  } else if (bmi < 25) {
+    category = 'Normal Weight';
+    advice = 'Excellent! Maintain with balanced diet and regular exercise.';
+    colorClass = 'bmi-normal';
+  } else if (bmi < 30) {
+    category = 'Overweight';
+    advice = 'Focus on portion control, cardio exercise, and more vegetables.';
+    colorClass = 'bmi-overweight';
+  } else {
+    category = 'Obese';
+    advice = 'Consult healthcare professional. Start with walking and dietary changes.';
+    colorClass = 'bmi-obese';
+  }
+  
+  bmiStatusEl.textContent = category;
+  bmiStatusEl.className = `bmi-category fs-6 mb-3 ${colorClass}`;
+  bmiAdviceEl.textContent = advice;
+  resultEl.style.display = 'block';
+  
+  // Update main BMI display
+  document.getElementById('bmi').textContent = bmi;
+  document.getElementById('bmiCategory').innerHTML = `<span class="${colorClass}">${category}</span>`;
+  document.getElementById('bmiTip').textContent = advice.substring(0, 80) + '...';
+}
+
+// Live stats update
+function updateLiveStats() {
+  userData.steps += Math.floor(Math.random() * 45) + 15;
+  userData.water += 0.15 + Math.random() * 0.25;
+  userData.calories += Math.floor(Math.random() * 25) + 8;
+  
+  updateStats();
+  saveData();
+}
+
+function updateStats() {
+  document.getElementById('steps').textContent = userData.steps.toLocaleString();
+  document.getElementById('water').textContent = userData.water.toFixed(1) + ' L';
+  document.getElementById('calories').textContent = userData.calories.toLocaleString() + ' kcal';
+  
+  // Progress bars
+  const stepsProgress = Math.min((userData.steps / 10000) * 100, 100);
+  const waterProgress = Math.min((userData.water / 3) * 100, 100);
+  const caloriesProgress = Math.min((userData.calories / 2500) * 100, 100);
+  
+  document.getElementById('stepsProgress').style.width = stepsProgress + '%';
+  document.getElementById('waterProgress').style.width = waterProgress + '%';
+  document.getElementById('caloriesProgress').style.width = caloriesProgress + '%';
+  
+  // Overall progress
+  const overallProgress = Math.round((stepsProgress + waterProgress + caloriesProgress) / 3);
+  document.getElementById('overallProgress').style.width = overallProgress + '%';
+  document.getElementById('overallProgress').innerHTML = `<span class="fw-bold">${overallProgress}%</span>`;
+  
+  // Goal progress
+  updateGoalProgress();
+}
+
+// Chart initialization
+function initChart() {
+  const ctx = document.getElementById('chartCanvas').getContext('2d');
+  
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [{
+        label: 'Steps (thousands)',
+        data: [6.2, 7.8, 5.9, 8.1, 9.2, 8.7, 9.8],
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        borderWidth: 4,
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#10b981',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 3,
+        pointRadius: 6
+      }, {
+        label: 'Calories (kcal)',
+        data: [1800, 1950, 1720, 2100, 2250, 1980, 2350],
+        borderColor: '#ef4444',
+        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+        borderWidth: 3,
+        fill: false,
+        tension: 0.3,
+        pointBackgroundColor: '#ef4444',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: { padding: 20, usePointStyle: true }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(0,0,0,0.05)' }
+        },
+        x: {
+          grid: { display: false }
+        }
+      }
+    }
+  });
+}
+
+// Health Tips
+const healthTips = [
+  { text: "Drink water first thing in the morning", icon: "fa-tint", color: "info" },
+  { text: "Take 5 deep breaths when stressed", icon: "fa-lungs", color: "success" },
+  { text: "Walk after every meal", icon: "fa-walking", color: "primary" },
+  { text: "Eat colorful vegetables daily", icon: "fa-carrot", color: "warning" },
+  { text: "Sleep 7-8 hours tonight", icon: "fa-bed", color: "secondary" },
+  { text: "Stretch for 5 minutes now", icon: "fa-person-running", color: "danger" },
+  { text: "Practice gratitude today", icon: "fa-heart", color: "pink" },
+  { text: "Limit screen time before bed", icon: "fa-mobile-alt", color: "dark" }
+];
+
+function generateTips() {
+  const container = document.getElementById('tipsContainer');
+  const randomTips = healthTips.sort(() => 0.5 - Math.random()).slice(0, 3);
+  
+  container.innerHTML = randomTips.map((tip, index) => `
+    <div class="tip-item" onclick="highlightTip(this)">
+      <i class="fa ${tip.icon} ${tip.color} fs-5 me-3"></i>
+      <div>
+        <strong>${tip.text}</strong>
+        <small class="d-block text-muted mt-1">${['Great idea!', 'Try this!', 'Recommended'][index]}</small>
+      </div>
+    </div>
+  `).join('');
+}
+
+function highlightTip(element) {
+  element.style.background = 'linear-gradient(135deg, rgba(34,197,94,0.2), rgba(74,222,128,0.2))';
+  element.style.borderLeftColor = '#22c55e';
+  setTimeout(() => {
+    element.style.background = '';
+    element.style.borderLeftColor = '#3b82f6';
+  }, 2000);
+}
+
+function generateNewTip() {
+  generateTips();
+}
+
+// Goals
+function saveGoal() {
+  const goalText = document.getElementById('goalInput').value.trim();
+  if (!goalText) return;
+  
+  userData.goals = [{ text: goalText, date: new Date().toISOString().split('T')[0] }];
+  document.getElementById('goalText').textContent = goalText;
+  document.getElementById('goalInput').value = '';
+  saveData();
+  updateGoalProgress();
+}
+
+function updateGoalProgress() {
+  const progress = Math.min((userData.steps / 8000) * 100, 100);
+  document.getElementById('goalProgress').style.width = progress + '%';
+}
+
+function loadData() {
+  if (userData.goals.length > 0) {
+    document.getElementById('goalText').textContent = userData.goals[0].text;
+  }
+  
+  // Load medications
+  updateMedicationsList();
+  updateHealthRecordsList();
+}
+
+function saveData() {
+  localStorage.setItem('curaXData', JSON.stringify(userData));
+}
+
+// Medications
+function addMedicine() {
+  const medName = document.getElementById('medicineInput').value.trim();
+  if (!medName) return;
+  
+  userData.medications.unshift({
+    name: medName,
+    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+    taken: false
+  });
+  
+  document.getElementById('medicineInput').value = '';
+  updateMedicationsList();
+  saveData();
+}
+
+function updateMedicationsList() {
+  const container = document.getElementById('medicationsList');
+  if (userData.medications.length === 0) {
+    container.innerHTML = '<small class="text-muted">No medications added</small>';
+    return;
+  }
+  
+  container.innerHTML = userData.medications.slice(0, 4).map(med => `
+    <div class="med-item d-flex justify-content-between align-items-center">
+      <div>
+        <strong>${med.name}</strong>
+        <small class="d-block text-muted">${med.time}</small>
+      </div>
+      <button class="btn btn-sm btn-success" onclick="markMedTaken(this)">
+        <i class="fa fa-check"></i>
+      </button>
+    </div>
+  `).join('');
+}
+
+// Health Records
+function saveHealthRecord() {
+  const record = document.getElementById('healthRecord').value.trim();
+  if (!record) return;
+  
+  userData.records.unshift({
+    text: record,
+    date: new Date().toLocaleDateString()
+  });
+  
+  document.getElementById('healthRecord').value = '';
+  updateHealthRecordsList();
+  saveData();
+}
+
+function updateHealthRecordsList() {
+  const container = document.getElementById('healthRecordsList');
+  if (userData.records.length === 0) {
+    container.innerHTML = '<small class="text-muted">No records saved</small>';
+    return;
+  }
+  
+  container.innerHTML = userData.records.slice(0, 3).map(record => `
+    <div class="record-item">
+      <div class="d-flex justify-content-between">
+        <strong>${record.text.substring(0, 40)}${record.text.length > 40 ? '...' : ''}</strong>
+        <small class="text-muted">${record.date}</small>
+      </div>
+    </div>
+  `).join('');
+}
+
+// AI Prediction
+function predictDisease() {
+  const symptoms = document.getElementById('symptomsInput').value.toLowerCase().trim();
+  const resultEl = document.getElementById('predictionResult');
+  
+  if (!symptoms) {
+    resultEl.innerHTML = '<div class="alert alert-warning small">Enter symptoms to predict</div>';
+    return;
+  }
+  
+  const predictions = {
+    'chest pain|short breath|difficulty breathing': '🚨 EMERGENCY: Possible heart issue - seek immediate medical help',
+    'fever|cough|fatigue': '⚠️ Possible respiratory infection (Flu/COVID) - rest & monitor',
+    'headache|nausea|vision': '⚠️ Possible migraine - rest in dark room, hydrate',
+    'fever|rash|joint pain': '⚠️ Possible infection - consult doctor',
+    'stomach pain|diarrhea': 'ℹ️ Possible food poisoning/gastroenteritis - hydrate & rest'
+  };
+  
+  let prediction = 'ℹ️ No major risks detected based on symptoms';
+  let alertType = 'info';
+  
+  for (let key in predictions) {
+    if (key.split('|').some(s => symptoms.includes(s))) {
+      prediction = predictions[key];
+      alertType = key.includes('EMERGENCY') ? 'danger' : 'warning';
+      break;
+    }
+  }
+  
+  resultEl.innerHTML = `<div class="alert alert-${alertType} small">
+    <i class="fa fa-exclamation-triangle me-2"></i>${prediction}
+  </div>`;
+}
+
+// File Upload
+function uploadReport() {
+  const fileInput = document.getElementById('reportFile');
+  const file = fileInput.files[0];
+  const preview = document.getElementById('reportPreview');
+  
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const fileData = e.target.result;
+    userData.reports.unshift({
+      name: file.name,
+      type: file.type,
+      size: (file.size / 1024).toFixed(1) + ' KB',
+      date: new Date().toLocaleDateString(),
+      data: fileData
+    });
+    
+    preview.innerHTML = `
+      <div class="alert alert-success small">
+        <i class="fa fa-check-circle me-2"></i>
+        <strong>${file.name}</strong> uploaded successfully<br>
+        <small>${(file.size / 1024).toFixed(1)} KB • ${new Date().toLocaleTimeString()}</small>
+      </div>
+    `;
+    
+    saveData();
+    fileInput.value = '';
+  };
+  
+  reader.readAsDataURL(file);
+}
+
+function markMedTaken(btn) {
+  btn.innerHTML = '<i class="fa fa-check-double"></i>';
+  btn.className = 'btn btn-sm btn-success disabled';
+  btn.parentElement.style.opacity = '0.7';
+}
+
+// Mark medication as taken
+function markMedTaken(btn) {
+  const medItem = btn.closest('.med-item');
+  medItem.querySelector('strong').innerHTML += ' <span class="badge bg-success ms-1">✓</span>';
+  btn.remove();
+}
+</script>
+
+</body>
+</html>

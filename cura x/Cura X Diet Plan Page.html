@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CuraX Diet Pro</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+
+/* BODY */
+body {
+  margin:0;
+  font-family:'Segoe UI', sans-serif;
+  background: linear-gradient(135deg,#eef5ff,#f8fbff);
+}
+
+/* SIDEBAR */
+.sidebar {
+  width:240px;
+  height:100vh;
+  position:fixed;
+  background:linear-gradient(180deg,#2563eb,#3b82f6);
+  color:#fff;
+  padding:25px;
+}
+
+.sidebar a {
+  display:block;
+  color:#fff;
+  margin:12px 0;
+  padding:10px;
+  border-radius:10px;
+  text-decoration:none;
+  transition:0.3s;
+}
+
+.sidebar a:hover {
+  background:rgba(255,255,255,0.2);
+  transform:translateX(5px);
+}
+
+/* MAIN */
+.main {
+  margin-left:240px;
+  padding:30px;
+  max-width:1200px;
+}
+
+/* CARD */
+.card-box {
+  background:rgba(255,255,255,0.75);
+  backdrop-filter: blur(12px);
+  padding:20px;
+  border-radius:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.08);
+  transition:0.3s;
+}
+
+.card-box:hover {
+  transform:translateY(-6px);
+}
+
+/* SPECIAL CARDS */
+.gradient-card {
+  background: linear-gradient(135deg,#6366f1,#3b82f6);
+  color:white;
+  text-align:center;
+}
+
+/* MEALS */
+.meal {
+  padding:12px;
+  border-radius:12px;
+  background:#f1f5ff;
+  margin-bottom:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.meal i { color:#2563eb; }
+
+/* CHECK */
+.check {
+  cursor:pointer;
+}
+
+/* WATER BAR */
+.water-bar {
+  height:10px;
+  background:#e0f2fe;
+  border-radius:10px;
+  overflow:hidden;
+}
+.water-fill {
+  height:100%;
+  width:0%;
+  background:#3b82f6;
+  transition:0.4s;
+}
+
+/* MACRO */
+.macro {
+  margin-bottom:10px;
+}
+
+.progress {
+  height:8px;
+}
+
+</style>
+</head>
+
+<body>
+
+
+<div class="sidebar">
+  <h3><i class="fa fa-heartbeat"></i> CuraX</h3>
+  <a href="Cura X Dashboard Page.html"><i class="fa fa-home"></i> Dashboard</a>
+  <a href="Cura X Appointment Page.html"><i class="fa fa-heart"></i> Appointments</a>
+  <a href="Cura X Mental Health Page.html"><i class="fa fa-brain"></i> Mental</a>
+  <a href="Cura X Diet Plan Page.html"><i class="fa fa-apple-alt"></i> Diet</a>
+  <a href="Cura X Fitness Plan Page.html"><i class="fa fa-dumbbell"></i> Fitness</a>
+    <a href="CuraX Gamification Page.html"><i class="fa fa-gamepad"></i> Gamification</a>
+</div>
+
+
+<div class="main">
+
+<h2 class="mb-4">🥗 Diet Pro Dashboard</h2>
+
+<div class="row g-4">
+
+<!-- GOAL -->
+<div class="col-md-3">
+<div class="card-box">
+<h6>Goal</h6>
+<select id="goal" class="form-control mb-2">
+<option>Weight Loss</option>
+<option>Weight Gain</option>
+<option>Maintain</option>
+</select>
+<button class="btn btn-primary w-100" onclick="generatePlan()">Generate</button>
+</div>
+</div>
+
+<!-- CALORIES -->
+<div class="col-md-3">
+<div class="card-box gradient-card">
+<h6>🔥 Calories</h6>
+<h2 id="calories">--</h2>
+</div>
+</div>
+
+<!-- WATER -->
+<div class="col-md-3">
+<div class="card-box">
+<h6>💧 Water</h6>
+<p id="waterText">0 / 2.5 L</p>
+<div class="water-bar"><div id="waterFill" class="water-fill"></div></div>
+<button class="btn btn-outline-primary btn-sm mt-2" onclick="drinkWater()">+ Drink</button>
+</div>
+</div>
+
+<!-- BMI -->
+<div class="col-md-3">
+<div class="card-box">
+<h6>📊 BMI</h6>
+<input id="weight" class="form-control mb-1" placeholder="Weight (kg)">
+<input id="height" class="form-control mb-1" placeholder="Height (cm)">
+<button class="btn btn-success w-100 btn-sm" onclick="calcBMI()">Check</button>
+<p id="bmiResult" class="mt-2"></p>
+</div>
+</div>
+
+</div>
+
+<!-- MACROS -->
+<div class="card-box mt-4">
+<h5>🍗 Macronutrients</h5>
+
+<div class="macro">
+Protein
+<div class="progress"><div id="proteinBar" class="progress-bar"></div></div>
+</div>
+
+<div class="macro">
+Carbs
+<div class="progress"><div id="carbBar" class="progress-bar bg-success"></div></div>
+</div>
+
+<div class="macro">
+Fats
+<div class="progress"><div id="fatBar" class="progress-bar bg-warning"></div></div>
+</div>
+
+</div>
+
+<!-- MEAL PLAN -->
+<div class="card-box mt-4">
+<h5>🍽 Daily Plan</h5>
+<div id="plan"></div>
+</div>
+
+</div>
+
+<script>
+
+let water=0;
+
+/* PLAN */
+function generatePlan(){
+ let goal=document.getElementById('goal').value;
+ let meals=["Oats","Rice","Salad"];
+
+ if(goal=="Weight Gain"){
+  meals=["Eggs","Chicken","Pasta"];
+ }
+
+ document.getElementById('calories').innerText =
+  goal=="Weight Loss"?"1800":"2500";
+
+ document.getElementById('proteinBar').style.width="70%";
+ document.getElementById('carbBar').style.width="60%";
+ document.getElementById('fatBar').style.width="40%";
+
+ document.getElementById('plan').innerHTML = meals.map(m =>
+  `<div class="meal">
+     <span><i class="fa fa-utensils"></i> ${m}</span>
+     <input type="checkbox" class="check">
+   </div>`
+ ).join("");
+}
+
+/* WATER */
+function drinkWater(){
+ if(water>=2.5) return;
+ water+=0.5;
+ document.getElementById('waterText').innerText = water+" / 2.5 L";
+ document.getElementById('waterFill').style.width = (water/2.5*100)+"%";
+}
+
+/* BMI */
+function calcBMI(){
+ let w=document.getElementById('weight').value;
+ let h=document.getElementById('height').value/100;
+
+ let bmi=(w/(h*h)).toFixed(1);
+ document.getElementById('bmiResult').innerText="BMI: "+bmi;
+}
+
+</script>
+
+</body>
+</html>
